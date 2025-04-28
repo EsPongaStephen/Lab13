@@ -1,18 +1,19 @@
 
-
-
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import javax.swing.*;
 
 public class LaboratoryManual {
 
     private JTextField nameField;
     private JTextField emailField;
     private JTextArea displayArea;
+    private int offset;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
@@ -21,11 +22,12 @@ public class LaboratoryManual {
     }
 
     private void initializeGUI() {
-        JFrame frame = new JFrame("CRUD Database Application");
+        offset = 0;
+        JFrame frame = new JFrame("Laboratory Manual - Database Management");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setPreferredSize(new Dimension(400, 600));
 
-        JPanel panel = new JPanel(new GridBagLayout());
+        JPanel mainPanel = new JPanel(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.insets = new Insets(5, 5, 5, 5);
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -35,60 +37,64 @@ public class LaboratoryManual {
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.gridwidth = 2;
-        panel.add(titleLabel, constraints);
+        mainPanel.add(titleLabel, constraints);
 
-        addFormElements(panel, constraints);
-        addTransactionButtons(panel, constraints);
-        addDisplayArea(panel, constraints);
+        addFormElements(mainPanel, constraints);
+        addTransactionButtons(mainPanel, constraints);
+        addDisplayArea(mainPanel, constraints);
 
-        frame.add(panel);
+        frame.add(mainPanel);
         frame.pack();
         frame.setVisible(true);
     }
-
     private void addFormElements(JPanel panel, GridBagConstraints constraints) {
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBorder(BorderFactory.createTitledBorder("User Details"));
+        GridBagConstraints formConstraints = new GridBagConstraints();
+        formConstraints.insets = new Insets(5, 5, 5, 5);
+        formConstraints.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel nameLabel = new JLabel("Name:");
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        formPanel.add(nameLabel, constraints);
+        formConstraints.gridx = 0;
+        formConstraints.gridy = 0;
+        formPanel.add(nameLabel, formConstraints);
 
         nameField = new JTextField(20);
-        constraints.gridx = 1;
-        formPanel.add(nameField, constraints);
+        formConstraints.gridx = 1;
+        formPanel.add(nameField, formConstraints);
 
         JLabel emailLabel = new JLabel("Email:");
-        constraints.gridy = 1;
-        constraints.gridx = 0;
-        formPanel.add(emailLabel, constraints);
+        formConstraints.gridy = 1;
+        formConstraints.gridx = 0;
+        formPanel.add(emailLabel, formConstraints);
 
         emailField = new JTextField(20);
-        constraints.gridx = 1;
-        formPanel.add(emailField, constraints);
+        formConstraints.gridx = 1;
+        formPanel.add(emailField, formConstraints);
 
         constraints.gridy = 1;
         panel.add(formPanel, constraints);
     }
-
     private void addTransactionButtons(JPanel panel, GridBagConstraints constraints) {
         JPanel buttonPanel = new JPanel(new GridBagLayout());
+        buttonPanel.setBorder(BorderFactory.createTitledBorder("Operations"));
+        GridBagConstraints btnConstraints = new GridBagConstraints();
+        btnConstraints.insets = new Insets(5, 5, 5, 5);
+        btnConstraints.fill = GridBagConstraints.HORIZONTAL;
 
         JButton addButton = new JButton("Add User");
         addButton.addActionListener(e -> addUser());
-        constraints.gridy = 0;
-        buttonPanel.add(addButton, constraints);
+        btnConstraints.gridy = 0;
+        buttonPanel.add(addButton, btnConstraints);
 
         JButton showButton = new JButton("Show Records");
         showButton.addActionListener(e -> showRecords());
-        constraints.gridy = 1;
-        buttonPanel.add(showButton, constraints);
+        btnConstraints.gridy = 1;
+        buttonPanel.add(showButton, btnConstraints);
 
         constraints.gridy = 2;
         panel.add(buttonPanel, constraints);
     }
-
     private void addDisplayArea(JPanel panel, GridBagConstraints constraints) {
         displayArea = new JTextArea(10, 30);
         displayArea.setEditable(false);
@@ -98,8 +104,8 @@ public class LaboratoryManual {
     }
 
     private void addUser() {
-        String username = "root"; // your MySQL username
-        String password = ""; // your MySQL password
+        String username = "root";
+        String password = "";
         String databaseUrl = "jdbc:mysql://localhost:3306/myoop";
 
         try (Connection con = DriverManager.getConnection(databaseUrl, username, password)) {
@@ -113,6 +119,7 @@ public class LaboratoryManual {
             displayArea.append("Error: " + e.getMessage() + "\n");
         }
     }
+
 
     private void showRecords() {
         String username = "root";
